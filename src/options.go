@@ -37,6 +37,7 @@ const usage = `usage: fzf [options]
     --tiebreak=CRI[,..]   Comma-separated list of sort criteria to apply
                           when the scores are tied [length|begin|end|index]
                           (default: length)
+    --auto-accept         Automatically accept last entry and exit
 
   Interface
     -m, --multi[=MAX]     Enable multi-select with tab/shift-tab
@@ -228,6 +229,7 @@ type Options struct {
 	Tabstop     int
 	ClearOnExit bool
 	Version     bool
+	AutoAccept  bool
 }
 
 func defaultPreviewOpts(command string) previewOpts {
@@ -287,6 +289,7 @@ func defaultOptions() *Options {
 		Unicode:     true,
 		Tabstop:     8,
 		ClearOnExit: true,
+		AutoAccept:  false,
 		Version:     false}
 }
 
@@ -1219,6 +1222,8 @@ func parseOptions(opts *Options, allArgs []string) {
 			opts.Phony = true
 		case "--tiebreak":
 			opts.Criteria = parseTiebreak(nextString(allArgs, &i, "sort criterion required"))
+		case "--auto-accept":
+			opts.AutoAccept = true
 		case "--bind":
 			parseKeymap(opts.Keymap, nextString(allArgs, &i, "bind expression required"))
 		case "--color":

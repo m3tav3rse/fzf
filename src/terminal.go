@@ -143,6 +143,7 @@ type Terminal struct {
 	selected     map[int32]selectedItem
 	version      int64
 	reqBox       *util.EventBox
+	autoAccept   bool
 	previewOpts  previewOpts
 	previewer    previewer
 	previewed    previewed
@@ -515,6 +516,7 @@ func NewTerminal(opts *Options, eventBox *util.EventBox) *Terminal {
 		merger:      EmptyMerger,
 		selected:    make(map[int32]selectedItem),
 		reqBox:      util.NewEventBox(),
+		autoAccept:  opts.AutoAccept,
 		previewOpts: opts.Preview,
 		previewer:   previewer{0, []string{}, 0, previewBox != nil && !opts.Preview.hidden, false, true, false, ""},
 		previewed:   previewed{0, 0, 0, false},
@@ -2627,6 +2629,10 @@ func (t *Terminal) Loop() {
 				}
 			}
 			return true
+		}
+
+		if t.autoAccept && t.merger.Length() == 1 {
+			req(reqClose)
 		}
 
 		if t.jumping == jumpDisabled {
